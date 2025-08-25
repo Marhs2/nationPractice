@@ -1,0 +1,39 @@
+svg {
+}
+
+svg path {
+  fill: none;
+  stroke: rgba(164, 164, 164, 0.401);
+  stroke-dasharray: 120%;
+  stroke-dashoffset: 120%;
+  animation: draw-line 5s forwards;
+}
+
+.loading {
+  /* display: none; */
+}
+
+svg path {
+  fill: rgb(0, 0, 0);
+  animation: draw-line 4s forwards, fill-path 1s 4s forwards;
+  fill-opacity: 0;
+}
+
+@keyframes draw-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fill-path {
+  from {
+    fill-opacity: 0;
+  }
+  to {
+    fill-opacity: 1;
+  }
+}
+
+header {
+  display: flex;
+}
