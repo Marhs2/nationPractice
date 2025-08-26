@@ -1,9 +1,19 @@
-svg {
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  list-style: none;
+  color: #333;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 svg path {
   fill: none;
-  stroke: rgba(164, 164, 164, 0.401);
+  stroke: rgb(255, 255, 255);
   stroke-dasharray: 120%;
   stroke-dashoffset: 120%;
   animation: draw-line 5s forwards;
@@ -11,17 +21,50 @@ svg path {
 
 .loading {
   /* display: none; */
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #676767a5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: dn 1s 3s forwards;
+}
+
+@keyframes dn {
+  to {
+    display: none;
+  }
 }
 
 svg path {
-  fill: rgb(0, 0, 0);
-  animation: draw-line 4s forwards, fill-path 1s 4s forwards;
+  fill: rgb(255, 255, 255);
+  animation: draw-line 4s forwards, fill-path 1s 3s forwards;
   fill-opacity: 0;
+}
+
+.df {
+  display: flex;
+}
+.jcSa {
+  justify-content: space-around;
+}
+.alC {
+  align-items: center;
+}
+.jcC {
+  justify-content: center;
+}
+.fdC {
+  flex-direction: column;
 }
 
 @keyframes draw-line {
   to {
     stroke-dashoffset: 0;
+    display: none;
   }
 }
 
@@ -31,9 +74,119 @@ svg path {
   }
   to {
     fill-opacity: 1;
+    display: none;
   }
 }
 
 header {
   display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.341);
+  position: sticky;
+  top: 0;
 }
+
+header > div[class*="nav"] {
+  width: 500px;
+  display: flex;
+  justify-content: space-around;
+  border: 1px solid black;
+  & a {
+    display: flex;
+    height: 50px;
+    width: 100%;
+    border: 1px solid black;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    &:hover {
+      background-color: bisque;
+    }
+  }
+}
+
+header img {
+  width: 150px;
+}
+
+.sideBar {
+  display: flex;
+  flex-direction: column;
+  height: 200px;
+  width: 150px;
+  font-weight: bold;
+  font-size: 17px;
+  position: fixed;
+  left: 3%;
+  top: 20%;
+  background-color: white;
+  border-radius: 10px;
+  border: 1px solid black;
+  overflow: hidden;
+  & a {
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    &:hover {
+      background-color: rgb(255, 108, 108);
+    }
+  }
+}
+
+#visual,
+#introduce,
+#books,
+#rule {
+  height: 100vh;
+  border: 1px solid black;
+}
+
+body:has(#visual:target) .sideBar [href="#visual"] {
+  background-color: RED;
+}
+
+body:has(#introduce:target) .sideBar [href="#introduce"] {
+  background-color: RED;
+}
+
+body:has(#books:target) .sideBar [href="#books"] {
+  background-color: RED;
+}
+
+body:has(#rule:target) .sideBar [href="#rule"] {
+  background-color: RED;
+}
+
+img {
+  vertical-align: middle;
+  object-fit: cover;
+}
+.slide-container {
+  background-color: red;
+}
+
+.slide-container img,
+.slide-container .img-cover {
+  width: 100vw;
+  height: 100vh;
+}
+
+.slide-container .img-cover {
+  background-color: #333;
+}
+
+.slide-container img {
+  opacity: 0.8;
+}
+
+
+
+
+
+
+
+

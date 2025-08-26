@@ -1,0 +1,23 @@
+.box div {
+  width: 50px;
+  height: 50px;
+  border: 1px solid black;
+}
+
+.box {
+  width: fit-content;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+input:in-range ~ .box {
+  grid-template-columns: repeat(5, 1fr);
+}
+input:in-range:valid ~ .box {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+input:out-of-range ~ .box,
+input:placeholder-shown ~ .box {
+  grid-template-columns: repeat(3, 1fr) !important;
+}

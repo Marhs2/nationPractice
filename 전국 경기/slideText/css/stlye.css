@@ -1,0 +1,30 @@
+.text .item {
+  width: 50px;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.slide-title {
+  word-break: keep-all;
+  white-space: nowrap;
+
+  overflow: hidden;
+  display: flex;
+  animation: slide 3s steps(10);
+}
+
+.over {
+  width: 100vw;
+  display: flex;
+}
+
+@keyframes slide {
+  0% {
+    width: 0;
+  }
+
+  100% {
+    width: 550px;
+  }
+}

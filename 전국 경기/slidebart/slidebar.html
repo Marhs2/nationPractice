@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      [id*="number"] {
+        height: 100vh;
+        border: 1px solid black;
+      }
+
+      .slidebar {
+        position: fixed;
+        top: 10%;
+        left: 10%;
+      }
+
+      #number1:target ~ .slidebar [href="#number1"] {
+        background-color: red;
+      }
+
+      #number2:target ~ .slidebar [href="#number2"] {
+        background-color: aqua;
+      }
+      #number3:target ~ .slidebar [href="#number3"] {
+        background-color: blue;
+      }
+      #number4:target ~ .slidebar [href="#number4"] {
+        background-color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="number1">0</div>
+    <div id="number2">1</div>
+    <div id="number3">2</div>
+    <div id="number4">3</div>
+    <div class="test">123</div>
+    <div class="slidebar">
+      <a href="#number1">일</a>
+      <a href="#number2">이</a>
+      <a href="#number3">삼</a>
+      <a href="#number4">사</a>
+    </div>
+  </body>
+</html>
