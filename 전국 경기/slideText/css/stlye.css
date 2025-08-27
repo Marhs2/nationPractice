@@ -8,10 +8,11 @@
 .slide-title {
   word-break: keep-all;
   white-space: nowrap;
-
+  width: fit-content;
   overflow: hidden;
   display: flex;
-  animation: slide 3s steps(10);
+  animation: slide 3s steps(40);
+  display: inline-block;
 }
 
 .over {
@@ -25,6 +26,6 @@
   }
 
   100% {
-    width: 550px;
+    width: 100%;
   }
 }
