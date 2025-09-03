@@ -9,15 +9,162 @@
         margin: 0;
         padding: 0;
       }
+
+      .arc {
+        border-radius: 50%;
+        position: absolute;
+        border: 1px solid black;
+        background-color: red;
+        z-index: 100;
+        width: 10px;
+        height: 10px;
+      }
+
+      canvas-container {
+        position: relative;
+      }
+
+      .building {
+        width: 1920px;
+        height: 500px;
+        border: 1px solid black;
+        display: grid;
+        overflow-y: scroll;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+      }
+
+      .building > div {
+        width: 500px;
+        height: 300px;
+        border: 1px solid black;
+      }
+
+      .showabout {
+        width: 700px;
+        height: 500px;
+        border: 1px solid black;
+        position: absolute;
+        top: 0;
+      }
+
+      .showContainer {
+        display: flex;
+      }
+
+      .showContainer > img {
+        height: 200px;
+      }
+
+      .imgs img {
+        width: 100px;
+      }
+
+      .menu-container {
+        border: 1px solid black;
+        width: 1400px;
+      }
+
+      .menu-container .about > img {
+        height: 300px;
+      }
+
+      .about {
+        display: flex;
+        justify-content: space-around;
+        margin: 10px;
+      }
+
+      .books {
+        height: 700px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        justify-items: center;
+        align-items: center;
+        overflow: scroll;
+      }
+
+      .books .img-cover {
+        position: relative;
+        width: 300px;
+        height: 400px;
+        background-color: #333;
+      }
+
+      .books .img-cover img {
+        opacity: 0.6;
+        width: 300px;
+        height: 400px;
+      }
+
+      .books .img-cover .img-content {
+        width: 250px;
+        position: absolute;
+        bottom: 20px;
+        left: calc(50% - 250px);
+        text-align: center;
+        color: white;
+        font-weight: bold;
+        font-size: 20px;
+        margin: 0 auto;
+      }
+
+      .close {
+        width: 100%;
+        height: 50px;
+        background-color: #333;
+        color: white;
+        text-align: center;
+        line-height: 50px;
+        font-weight: bold;
+        font-size: 20px;
+      }
     </style>
   </head>
   <body>
-    <canvas
-      id="canvas"
-      width="1920"
-      height="1080"
-      style="border: 1px solid"
-    ></canvas>
+    <div class="canvas-container">
+      <canvas id="canvas" width="1920" height="1080" style="border: 1px solid">
+      </canvas>
+      <div class="showabout">
+        <h1>도서관 이름</h1>
+
+        <div class="showContainer">
+          <img src="../images/find/리온 도서관.jpg" />
+          <div class="about">
+            <div class="text">대충 내영</div>
+            <div class="imgs">
+              <img src="../images/find/리온 도서관/10.jpg" />
+              <img src="../images/find/리온 도서관/1.jpg" />
+              <img src="../images/find/리온 도서관/6.jpg" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="searchBox">
+      <input type="text" placeholder="검색하기" />
+      <button>검색</button>
+      <div class="building"></div>
+    </div>
+
+    <div class="menu">
+      <h1>도서관 정보 모달</h1>
+
+      <div class="menu-container">
+        <div class="about">
+          <img src="../images/find/리온 도서관.jpg" />
+          <div class="intro">
+            <div class="name">도서관 명</div>
+            <div class="text">소개</div>
+          </div>
+        </div>
+
+        <div class="books"></div>
+        <div class="close">닫기</div>
+      </div>
+    </div>
+
     <script src="./js/script.js"></script>
   </body>
 </html>
