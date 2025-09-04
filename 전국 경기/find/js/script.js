@@ -3,6 +3,8 @@ const ctx = canvas.getContext("2d");
 const building = document.querySelector(".building");
 const popup = document.querySelector(".showabout");
 const menu = document.querySelector(".menu");
+let booksContainer = document.querySelector(".books");
+
 canvas.width = 1920;
 canvas.height = 1080;
 
@@ -173,7 +175,7 @@ canvas.addEventListener("click", (e) => {
 
   const itemIdx = hoveredItem["idx"];
 
-  libIdx =libraryData[itemIdx]
+  libIdx = libraryData[itemIdx];
 
   renderBooks(libraryData[itemIdx].books);
 });
@@ -182,7 +184,7 @@ draw();
 const search = document.querySelector("input");
 const btn = document.querySelector("button");
 
-function clickBuilding() {
+async function clickBuilding() {
   const building = [...document.querySelectorAll(".building div")];
 
   building.forEach((e) => {
@@ -285,8 +287,6 @@ function clickBuilding() {
 
     const books = document.querySelector(".bookList");
 
-    console.log(books);
-
     let bookNames = [
       ...new Set(
         libraryData.flatMap((library) =>
@@ -301,7 +301,9 @@ function clickBuilding() {
     bookNames.forEach((e) => {
       books.innerHTML += `${e}`;
     });
+    booksContainer = document.querySelector(".books");
 
+    clickBuilding()
     attachEventListeners();
   });
 }
@@ -370,7 +372,7 @@ function handleBookClick(event) {
 
 // 이벤트 리스너를 한 번만 등록합니다.
 function attachEventListeners() {
-  const booksContainer = document.querySelector(".books");
+  console.log("work");
   booksContainer.addEventListener("click", (event) => {
     const bookElement = event.target.closest(".img-cover");
     if (bookElement) {
