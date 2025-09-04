@@ -1,395 +1,308 @@
-const canvas = document.querySelector("#canvas");
-const ctx = canvas.getContext("2d");
-const building = document.querySelector(".building");
-const popup = document.querySelector(".showabout");
-const menu = document.querySelector(".menu");
-let booksContainer = document.querySelector(".books");
+// 애플리케이션의 상태와 로직을 관리하는 객체
+const libraryMapApp = {
+    // DOM 요소
+    nodes: {},
+    // 데이터
+    state: {
+        libraryData: [],
+        mapData: [],
+        drawableLibraries: [], // Canvas에 그릴 좌표 정보 포함
+        hoveredLibraryIdx: null,
+        selectedLibraryIdx: 0,
+    },
 
-canvas.width = 1920;
-canvas.height = 1080;
+    // 상수 (Magic Number 제거)
+    CONSTANTS: {
+        MAP_MIN_X: 126,
+        MAP_MAX_X: 127,
+        MAP_MIN_MAX_Y: 35,
+        X_OFFSET: -1000,
+        Y_OFFSET: 800,
+        Y_MULTIPLIER: 2,
+        POINT_RADIUS: 10,
+    },
 
-let libraryData = [];
-let mapData = [];
+    // 초기화 함수
+    async init() {
+        this.cacheDOM();
+        this.setCanvasSize();
+        await this.fetchData();
+        this.calculateDrawPositions();
+        this.renderBuildingList();
+        this.renderMap();
+        this.renderLibraryMenu(this.state.libraryData[this.state.selectedLibraryIdx]);
+        this.bindEvents();
+    },
 
-let hoverIndex = null;
+    // 사용할 DOM 요소를 미리 찾아 저장
+    cacheDOM() {
+        this.nodes.canvas = document.querySelector("#canvas");
+        this.nodes.ctx = this.nodes.canvas.getContext("2d");
+        this.nodes.buildingList = document.querySelector(".building");
+        this.nodes.popup = document.querySelector(".showabout");
+        this.nodes.menu = document.querySelector(".menu");
+        this.nodes.booksContainer = document.querySelector(".books");
+        this.nodes.searchInput = document.querySelector("input");
+        this.nodes.searchBtn = document.querySelector("button");
+        this.nodes.closeBtn = document.querySelector(".close");
+    },
 
-const libraries = [];
-let libs = null;
-let libIdx = 0;
-let cate = "all";
+    setCanvasSize() {
+        this.nodes.canvas.width = 1920;
+        this.nodes.canvas.height = 1080;
+    },
 
-async function genBook() {
-  try {
-    const res = await fetch("./find_library.json");
-    const data = await res.json();
-    mapData = data.map;
-    libraryData = data.libraries;
-
-    libraryData.forEach((e) => {
-      building.innerHTML += `<div data-id='${e.idx - 1}'>${e.name}</div>`;
-    });
-
-    drawAll(null);
-    libs = [...document.querySelectorAll(".building div")];
-    clickBuilding();
-  } catch (error) {
-    console.log(error);
-  }
-}
-function drawAll() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  const minX = 126;
-  const maxX = 127;
-  const minMaxY = 35;
-
-  ctx.strokeStyle = "black";
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  mapData.forEach(([lon, lat], i) => {
-    const x = Math.floor(((lon - minX) * canvas.width) / (maxX - minX));
-    const y = Math.floor((minMaxY - lat) * canvas.height * 2);
-
-    if (i === 0) {
-      ctx.moveTo(x - 1000, y + 800);
-    } else {
-      ctx.lineTo(x - 1000, y + 800);
-    }
-  });
-  ctx.stroke();
-  ctx.closePath();
-}
-
-let arr = [];
-hoverIndex = -1;
-
-function draw() {
-  fetch("./find_library.json")
-    .then((res) => res.json())
-    .then((data) => {
-      arr = [];
-      data.libraries.forEach((e, idx) => {
-        const path = new Path2D();
-
-        let minMaxY = 35;
-        let minX = 126;
-        let maxX = 127;
-
-        const x = Math.floor(
-          ((e.longitude - minX) * canvas.width) / (maxX - minX)
-        );
-        const y = Math.floor((minMaxY - e.latitude) * canvas.height * 2);
-
-        long = x - 1000;
-        lat = y + 800;
-
-        path.arc(long, lat, 10, 0, Math.PI * 2);
-        ctx.fillStyle = idx === hoverIndex ? "red" : "black";
-        ctx.fill(path);
-        arr.push({ path, long, lat, idx });
-      });
-    });
-}
-
-canvas.addEventListener("click", (e) => {
-  const rect = canvas.getBoundingClientRect();
-
-  const mouseX = e.clientX - rect.left;
-  const mouseY = e.clientY - rect.top;
-
-  const hoveredItem = arr.find(({ path }) =>
-    ctx.isPointInPath(path, mouseX, mouseY)
-  );
-
-  menu.style.display = "block";
-
-  renderBooks(libraryData[hoveredItem.idx].books);
-  libIdx = hoveredItem.idx;
-  console.log(document.querySelector(".menu-container .about img"));
-  document.querySelector(".menu-container .about img").src = `../images/find/${
-    libraryData[hoveredItem.idx].image
-  }`;
-  document.querySelector(".menu-container .about .name").textContent =
-    libraryData[hoveredItem.idx].name;
-  document.querySelector(".menu-container .about .text").textContent =
-    libraryData[hoveredItem.idx].introduction;
-  console.log(libraryData[hoveredItem.idx]);
-});
-
-canvas.addEventListener("mousemove", (e) => {
-  const rect = canvas.getBoundingClientRect();
-
-  const mouseX = e.clientX - rect.left;
-  const mouseY = e.clientY - rect.top;
-
-  const hoveredItem = arr.find(({ path }) =>
-    ctx.isPointInPath(path, mouseX, mouseY)
-  );
-
-  if (hoveredItem) {
-    popup.setAttribute(
-      "style",
-      `display:block;left:${hoveredItem.long + rect.left + 10}px;top:${
-        hoveredItem.lat + rect.top - 250
-      }px`
-    );
-
-    const lib = libraryData[hoveredItem.idx];
-
-    let books = lib["books"].sort((a, b) => b.rating - a.rating);
-
-    popup.innerHTML = `
-            <h1>${lib.name}</h1>
-
-        <div class="showContainer">
-          <img src="../images/find/${lib.image}" />
-          <div class="about">
-            <div class="text">${lib.introduction}</div>
-            <div class="imgs">
-              <img src="../images/find/${books[0].image}" />
-              <img src="../images/find/${books[1].image}" />
-              <img src="../images/find/${books[2].image}" />
-            </div>
-          </div>
-        </div>
-
+    // 데이터 한 번만 fetching
+    async fetchData() {
+        try {
+            const res = await fetch("./find_library.json");
+            const data = await res.json();
+            this.state.mapData = data.map;
+            this.state.libraryData = data.libraries;
+        } catch (error) {
+            console.error("데이터를 불러오는 데 실패했습니다:", error);
+        }
+    },
     
-    `;
-  } else {
-    popup.setAttribute("style", "display:none;");
-  }
+    // Canvas에 그릴 좌표를 미리 계산하여 저장
+    calculateDrawPositions() {
+        const { canvas } = this.nodes;
+        const { MAP_MIN_X, MAP_MAX_X, MAP_MIN_MAX_Y, X_OFFSET, Y_OFFSET, Y_MULTIPLIER } = this.CONSTANTS;
 
-  const que = hoveredItem ? hoveredItem.idx : -1;
-  hoverIndex = que;
-  draw();
-});
+        this.state.drawableLibraries = this.state.libraryData.map(lib => {
+            const x = Math.floor(((lib.longitude - MAP_MIN_X) * canvas.width) / (MAP_MAX_X - MAP_MIN_X)) + X_OFFSET;
+            const y = Math.floor((MAP_MIN_MAX_Y - lib.latitude) * canvas.height * Y_MULTIPLIER) + Y_OFFSET;
+            const path = new Path2D();
+            path.arc(x, y, this.CONSTANTS.POINT_RADIUS, 0, Math.PI * 2);
+            return { ...lib, x, y, path };
+        });
+    },
 
-canvas.addEventListener("click", (e) => {
-  const rect = canvas.getBoundingClientRect();
-  const mouseX = e.clientX - rect.left;
-  const mouseY = e.clientY - rect.top;
+    // 이벤트 리스너 등록
+    bindEvents() {
+        // Event Delegation 적용
+        this.nodes.buildingList.addEventListener("mouseover", this.handleBuildingMouseOver.bind(this));
+        this.nodes.buildingList.addEventListener("mouseleave", this.handleBuildingMouseLeave.bind(this));
+        this.nodes.buildingList.addEventListener("click", this.handleBuildingClick.bind(this));
+        
+        this.nodes.canvas.addEventListener("mousemove", this.handleCanvasMouseMove.bind(this));
+        this.nodes.canvas.addEventListener("click", this.handleCanvasClick.bind(this));
 
-  const hoveredItem = arr.find(({ path }) =>
-    ctx.isPointInPath(path, mouseX, mouseY)
-  );
+        this.nodes.searchBtn.addEventListener("click", this.handleSearch.bind(this));
 
-  const itemIdx = hoveredItem["idx"];
+        // Event Delegation 적용
+        this.nodes.booksContainer.addEventListener("click", this.handleBookClick.bind(this));
+        
+        this.nodes.closeBtn.addEventListener("click", () => this.nodes.menu.style.display = "none");
+    },
+    
+    // 전체 다시 그리기
+    render() {
+        this.renderMap();
+        this.renderLibraryPoints();
+    },
 
-  libIdx = libraryData[itemIdx];
+    // 지도 경계선 그리기
+    renderMap() {
+        const { ctx, canvas } = this.nodes;
+        const { MAP_MIN_X, MAP_MAX_X, MAP_MIN_MAX_Y, X_OFFSET, Y_OFFSET, Y_MULTIPLIER } = this.CONSTANTS;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        
+        this.state.mapData.forEach(([lon, lat], i) => {
+            const x = Math.floor(((lon - MAP_MIN_X) * canvas.width) / (MAP_MAX_X - MAP_MIN_X)) + X_OFFSET;
+            const y = Math.floor((MAP_MIN_MAX_Y - lat) * canvas.height * Y_MULTIPLIER) + Y_OFFSET;
+            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        });
+        
+        ctx.stroke();
+        ctx.closePath();
+    },
 
-  renderBooks(libraryData[itemIdx].books);
-});
-draw();
+    // 도서관 위치 포인트 그리기
+    renderLibraryPoints() {
+        const { ctx } = this.nodes;
+        this.state.drawableLibraries.forEach(lib => {
+            ctx.fillStyle = lib.idx === this.state.hoveredLibraryIdx ? "red" : "black";
+            ctx.fill(lib.path);
+        });
+    },
 
-const search = document.querySelector("input");
-const btn = document.querySelector("button");
+    // 왼쪽 건물 목록 렌더링
+    renderBuildingList(libraries = this.state.libraryData) {
+        // innerHTML을 반복적으로 사용하지 않고, 한 번에 문자열을 만들어 삽입 (성능 개선)
+        this.nodes.buildingList.innerHTML = libraries
+            .map(lib => `<div data-id="${lib.idx}">${lib.name}</div>`)
+            .join("");
+    },
+    
+    // 도서관 상세 메뉴 렌더링
+    renderLibraryMenu(library) {
+        if (!library) return;
+        
+        this.state.selectedLibraryIdx = library.idx;
+        this.nodes.menu.style.display = "block";
+        
+        const aboutSection = this.nodes.menu.querySelector('.about');
+        aboutSection.querySelector("img").src = `../images/find/${library.image}`;
+        aboutSection.querySelector(".name").textContent = library.name;
+        aboutSection.querySelector(".text").textContent = library.introduction;
 
-async function clickBuilding() {
-  const building = [...document.querySelectorAll(".building div")];
+        this.renderBooks(library.books);
+    },
 
-  building.forEach((e) => {
-    e.addEventListener("mouseleave", (event) => {
-      building.forEach((e2) => {
-        e2.style.backgroundColor = "white";
-      });
-      popup.setAttribute("style", "display:none;");
-    });
+    // 책 목록 렌더링
+    renderBooks(books, selectedBookId = null) {
+        // 정렬 로직 분리
+        const sortedBooks = [...books].sort((a, b) => {
+            if (selectedBookId !== null) {
+                // 선택된 책을 맨 앞으로
+                return (b.idx === selectedBookId) - (a.idx === selectedBookId);
+            }
+            return 0; // 기본 정렬 없음
+        });
 
-    e.addEventListener("mouseover", (event) => {
-      building.forEach((e2) => {
-        e2.style.backgroundColor = "white";
-      });
-      data = arr[event.target.getAttribute("data-id")];
+        this.nodes.booksContainer.innerHTML = sortedBooks.map(item => `
+            <div class="img-cover ${item.idx === selectedBookId ? 'select' : ''}" data-cate="${item.cate}" data-idx="${item.idx}">
+                <img src="../images/find/${item.image}" alt="${item.name}" />
+                <div class="img-content">
+                    <div class="title">제목: <span class="setTitle">${item.name}</span></div>
+                    <div class="publisher">출판일: <span class="setPublisher">${item.date}</span></div>
+                    <div class="cate">카테고리: <span class="setCate">${item.cate}</span></div>
+                    <div class="author">작가: <span class="setAuthor">${item.author}</span></div>
+                </div>
+            </div>
+        `).join('');
+    },
+    
+    // 팝업 정보 업데이트 및 표시/숨김
+    updatePopup(library) {
+        if (library) {
+            const rect = this.nodes.canvas.getBoundingClientRect();
+            const bestBooks = [...library.books].sort((a, b) => b.rating - a.rating).slice(0, 3);
+            
+            this.nodes.popup.innerHTML = `
+                <h1>${library.name}</h1>
+                <div class="showContainer">
+                    <img src="../images/find/${library.image}" />
+                    <div class="about">
+                        <div class="text">${library.introduction}</div>
+                        <div class="imgs">
+                            ${bestBooks.map(book => `<img src="../images/find/${book.image}" />`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            this.nodes.popup.style.display = "block";
+            this.nodes.popup.style.left = `${library.x + rect.left + 15}px`;
+            this.nodes.popup.style.top = `${library.y + rect.top - this.nodes.popup.offsetHeight / 2}px`;
+        } else {
+            this.nodes.popup.style.display = "none";
+        }
+    },
 
-      e.style.backgroundColor = "red";
-      hoverIndex = data.idx;
-      draw();
+    // --- 이벤트 핸들러 ---
+    handleBuildingMouseOver(e) {
+        if (!e.target.matches('.building div')) return;
+        
+        const libraryId = parseInt(e.target.dataset.id, 10);
+        this.state.hoveredLibraryIdx = libraryId;
+        
+        // 모든 div의 배경색 초기화 후 현재 대상만 변경
+        this.nodes.buildingList.querySelectorAll('div').forEach(div => div.style.backgroundColor = 'white');
+        e.target.style.backgroundColor = 'red';
 
-      if (data.idx || data.idx === 0) {
-        popup.setAttribute(
-          "style",
-          `display:block;left:${data.long + 10}px;top:${data.lat - 250}px`
+        const hoveredLibrary = this.state.drawableLibraries.find(lib => lib.idx === libraryId);
+        this.updatePopup(hoveredLibrary);
+        this.render();
+    },
+
+    handleBuildingMouseLeave() {
+        this.state.hoveredLibraryIdx = null;
+        this.nodes.buildingList.querySelectorAll('div').forEach(div => div.style.backgroundColor = 'white');
+        this.updatePopup(null);
+        this.render();
+    },
+
+    handleBuildingClick(e) {
+        if (!e.target.matches('.building div')) return;
+
+        const libraryId = parseInt(e.target.dataset.id, 10);
+        const library = this.state.libraryData.find(lib => lib.idx === libraryId);
+        this.renderLibraryMenu(library);
+    },
+
+    handleCanvasMouseMove(e) {
+        const rect = this.nodes.canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        const hoveredLibrary = this.state.drawableLibraries.find(lib => 
+            this.nodes.ctx.isPointInPath(lib.path, mouseX, mouseY)
         );
 
-        const lib = libraryData[data.idx];
+        const newHoverIdx = hoveredLibrary ? hoveredLibrary.idx : null;
 
-        let books = lib["books"].sort((a, b) => b.rating - a.rating);
+        if (newHoverIdx !== this.state.hoveredLibraryIdx) {
+            this.state.hoveredLibraryIdx = newHoverIdx;
+            this.updatePopup(hoveredLibrary);
+            this.render();
+        }
+    },
 
-        popup.innerHTML = `
-            <h1>${lib.name}</h1>
+    handleCanvasClick(e) {
+        const rect = this.nodes.canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
 
-        <div class="showContainer">
-          <img src="../images/find/${lib.image}" />
-          <div class="about">
-            <div class="text">${lib.introduction}</div>
-            <div class="imgs">
-              <img src="../images/find/${books[0].image}" />
-              <img src="../images/find/${books[1].image}" />
-              <img src="../images/find/${books[2].image}" />
-            </div>
-          </div>
-        </div>
+        const clickedLibrary = this.state.drawableLibraries.find(lib =>
+            this.nodes.ctx.isPointInPath(lib.path, mouseX, mouseY)
+        );
 
+        if (clickedLibrary) {
+            this.renderLibraryMenu(clickedLibrary);
+        }
+    },
     
-    `;
-      } else {
-        popup.setAttribute("style", "display:none;");
-      }
-    });
+    handleBookClick(e) {
+        const bookElement = e.target.closest(".img-cover");
+        if (!bookElement) return;
 
-    e.addEventListener("click", (el) => {
-      menu.style.display = "block";
+        const selectedBookId = parseInt(bookElement.dataset.idx, 10);
+        const selectedBookCate = bookElement.dataset.cate;
+        const currentLibrary = this.state.libraryData.find(lib => lib.idx === this.state.selectedLibraryIdx);
+        
+        if (bookElement.classList.contains("select")) {
+            // 이미 선택된 책을 다시 클릭하면 필터 해제
+            this.renderBooks(currentLibrary.books);
+        } else {
+            // 다른 책을 클릭하면 해당 카테고리로 필터링하고 선택된 책을 맨 위로
+            const filteredBooks = currentLibrary.books.filter(book => book.cate === selectedBookCate);
+            this.renderBooks(filteredBooks, selectedBookId);
+        }
+    },
+    
+    handleSearch() {
+        const searchTerm = this.nodes.searchInput.value.trim().toLowerCase();
+        
+        if (!searchTerm) {
+            this.renderBuildingList(this.state.libraryData);
+            return;
+        }
 
-      libIdx = el.target.getAttribute("data-id");
+        const filteredLibraries = this.state.libraryData.filter(library => {
+            const libraryNameMatch = library.name.toLowerCase().includes(searchTerm);
+            const bookNameMatch = library.books.some(book => book.name.toLowerCase().includes(searchTerm));
+            return libraryNameMatch || bookNameMatch;
+        });
 
-      renderBooks(libraryData[el.target.getAttribute("data-id")].books);
-      document.querySelector(".menu-container img").src =
-        "../images/find/" +
-        libraryData[el.target.getAttribute("data-id")].image;
-      document.querySelector(".menu-container .name").textContent =
-        libraryData[el.target.getAttribute("data-id")].name;
-      document.querySelector(".menu-container .text").textContent =
-        libraryData[el.target.getAttribute("data-id")].introduction;
-    });
-  });
-
-  btn.addEventListener("click", () => {
-    if (!search.value.trim()) {
-      building.forEach((e) => {
-        e.style.display = "block";
-      });
+        this.renderBuildingList(filteredLibraries);
+        // 검색 결과에 따른 도서 목록도 업데이트 할 수 있습니다 (선택적)
     }
-    const data = libraryData.filter((library) => {
-      const searchTerm = search.value.trim();
+};
 
-      const libraryNameMatch = library.name.includes(searchTerm);
-
-      const bookNameMatch = Object.values(library.books).some((book) =>
-        book.name.includes(searchTerm)
-      );
-
-      return libraryNameMatch || bookNameMatch;
-    });
-
-    const buildingContainer = document.querySelector(".building");
-
-    console.log(buildingContainer);
-    buildingContainer.innerHTML = "";
-
-    data.forEach((el) => {
-      console.log(el);
-      buildingContainer.innerHTML += `
-      <div data-id="${el.idx}" >
-      ${el.name}
-      </div>;
-      `;
-    });
-
-    const books = document.querySelector(".bookList");
-
-    let bookNames = [
-      ...new Set(
-        libraryData.flatMap((library) =>
-          Object.values(library.books)
-            .filter((book) => book.name.includes(search.value.trim()))
-            .map((book) => book.name)
-        )
-      ),
-    ];
-
-    books.innerHTML = ``;
-    bookNames.forEach((e) => {
-      books.innerHTML += `${e}`;
-    });
-    booksContainer = document.querySelector(".books");
-
-    clickBuilding()
-    attachEventListeners();
-  });
-}
-
-let currentCate = "all";
-
-async function wait() {
-  await genBook();
-  renderBooks(libraryData[0].books);
-  attachEventListeners();
-}
-
-// 렌더링 로직: 화면에 책을 그립니다.
-function renderBooks(booksToRender, selectedBookId = null) {
-  const booksContainer = document.querySelector(".books");
-  booksContainer.innerHTML = "";
-
-  const sortedBooks = booksToRender.sort((a, b) => {
-    if (selectedBookId !== null) {
-      return (b.idx === selectedBookId) - (a.idx === selectedBookId);
-    }
-    return 0;
-  });
-
-  sortedBooks.forEach((item) => {
-    const newBox = document.createElement("div");
-    newBox.classList.add("img-cover");
-    newBox.setAttribute("data-id", item.cate);
-    newBox.setAttribute("data-idx", item.idx);
-    newBox.dataset;
-
-    if (item.idx === selectedBookId) {
-      newBox.classList.add("select");
-    }
-
-    newBox.innerHTML = `
-            <img src="../images/find/${item.image}" />
-            <div class="img-content">
-                <div class="title">제목: <span class="setTitle">${item.name}</span></div>
-                <div class="publisher">출판일: <span class="setPublisher">${item.date}</span></div>
-                <div class="cate">카테고리: <span class="setCate">${item.cate}</span></div>
-                <div class="author">작가: <span class="setAuthor">${item.author}</span></div>
-            </div>
-        `;
-    booksContainer.appendChild(newBox);
-  });
-}
-
-// 이벤트 핸들러: 클릭 이벤트를 처리합니다.
-function handleBookClick(event) {
-  const clickedElement = event.currentTarget;
-  const clickIdx = parseInt(clickedElement.getAttribute("data-idx"));
-  const bookCate = clickedElement.getAttribute("data-id");
-
-  currentCate = bookCate;
-
-  const filteredBooks = libraryData[libIdx].books.filter(
-    (book) => book.cate === bookCate
-  );
-  if (event.currentTarget.classList.contains("select")) {
-    renderBooks(libraryData[libIdx].books);
-  } else {
-    renderBooks(filteredBooks, clickIdx);
-  }
-}
-
-// 이벤트 리스너를 한 번만 등록합니다.
-function attachEventListeners() {
-  console.log("work");
-  booksContainer.addEventListener("click", (event) => {
-    const bookElement = event.target.closest(".img-cover");
-    if (bookElement) {
-      handleBookClick({ currentTarget: bookElement });
-    }
-  });
-}
-
-// 초기화 함수
-async function init() {
-  await wait();
-}
-
-init();
-
-const close = document.querySelector(".close");
-
-close.addEventListener("click", () => {
-  menu.style.display = "none";
-});
+// 애플리케이션 시작
+libraryMapApp.init();
