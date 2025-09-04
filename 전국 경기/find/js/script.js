@@ -104,17 +104,17 @@ canvas.addEventListener("click", (e) => {
   if (hoveredItem || hoveredItem === 0) {
     renderBooks(libraryData[hoveredItem.idx].books);
 
-    menu.style.display = "block";
     libIdx = hoveredItem.idx;
     console.log(document.querySelector(".menu-container .about img"));
     document.querySelector(
       ".menu-container .about img"
-    ).src = `../images/find/${libraryData[hoveredItem.idx].image}`;
+    ).src = `../images/find/${libraryData[libIdx].image}`;
     document.querySelector(".menu-container .about .name").textContent =
-      libraryData[hoveredItem.idx].name;
+      libraryData[libIdx].name;
     document.querySelector(".menu-container .about .text").textContent =
-      libraryData[hoveredItem.idx].introduction;
-    console.log(libraryData[hoveredItem.idx]);
+      libraryData[libIdx].introduction;
+    console.log(libraryData[libIdx]);
+    menu.style.display = "block";
   }
 });
 
@@ -245,9 +245,12 @@ async function clickBuilding() {
     e.addEventListener("click", (el) => {
       menu.style.display = "block";
 
-      libIdx = parseInt(el.target.getAttribute("data-id")) - 1;
+      // libIdx = libraryData[itemIdx];
+      libIdx = parseInt(el.target.getAttribute("data-id"));
+      console.log(libIdx);
 
       renderBooks(libraryData[libIdx].books);
+
       document.querySelector(".menu-container img").src =
         "../images/find/" + libraryData[libIdx].image;
       document.querySelector(".menu-container .name").textContent =
