@@ -173,6 +173,8 @@ canvas.addEventListener("click", (e) => {
 
   const itemIdx = hoveredItem["idx"];
 
+  libIdx =libraryData[itemIdx]
+
   renderBooks(libraryData[itemIdx].books);
 });
 draw();
@@ -235,6 +237,8 @@ function clickBuilding() {
 
     e.addEventListener("click", (el) => {
       menu.style.display = "block";
+
+      libIdx = el.target.getAttribute("data-id");
 
       renderBooks(libraryData[el.target.getAttribute("data-id")].books);
       document.querySelector(".menu-container img").src =
@@ -385,5 +389,5 @@ init();
 const close = document.querySelector(".close");
 
 close.addEventListener("click", () => {
-  menu.style.display = 'none'
+  menu.style.display = "none";
 });
