@@ -101,19 +101,21 @@ canvas.addEventListener("click", (e) => {
     ctx.isPointInPath(path, mouseX, mouseY)
   );
 
-  menu.style.display = "block";
+  if (hoveredItem || hoveredItem === 0) {
+    renderBooks(libraryData[hoveredItem.idx].books);
 
-  renderBooks(libraryData[hoveredItem.idx].books);
-  libIdx = hoveredItem.idx;
-  console.log(document.querySelector(".menu-container .about img"));
-  document.querySelector(".menu-container .about img").src = `../images/find/${
-    libraryData[hoveredItem.idx].image
-  }`;
-  document.querySelector(".menu-container .about .name").textContent =
-    libraryData[hoveredItem.idx].name;
-  document.querySelector(".menu-container .about .text").textContent =
-    libraryData[hoveredItem.idx].introduction;
-  console.log(libraryData[hoveredItem.idx]);
+    menu.style.display = "block";
+    libIdx = hoveredItem.idx;
+    console.log(document.querySelector(".menu-container .about img"));
+    document.querySelector(
+      ".menu-container .about img"
+    ).src = `../images/find/${libraryData[hoveredItem.idx].image}`;
+    document.querySelector(".menu-container .about .name").textContent =
+      libraryData[hoveredItem.idx].name;
+    document.querySelector(".menu-container .about .text").textContent =
+      libraryData[hoveredItem.idx].introduction;
+    console.log(libraryData[hoveredItem.idx]);
+  }
 });
 
 canvas.addEventListener("mousemove", (e) => {
@@ -173,11 +175,13 @@ canvas.addEventListener("click", (e) => {
     ctx.isPointInPath(path, mouseX, mouseY)
   );
 
-  const itemIdx = hoveredItem["idx"];
+  if (hoveredItem || hoverIndex === 0) {
+    const itemIdx = hoveredItem["idx"];
 
-  libIdx = libraryData[itemIdx];
+    libIdx = libraryData[itemIdx];
 
-  renderBooks(libraryData[itemIdx].books);
+    renderBooks(libraryData[itemIdx].books);
+  }
 });
 draw();
 
