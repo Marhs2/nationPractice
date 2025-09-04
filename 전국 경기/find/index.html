@@ -102,7 +102,10 @@
         width: 250px;
         position: absolute;
         bottom: 20px;
-        left: calc(50% - 250px);
+        display: flex;
+        left: 30px;
+        flex-direction: column;
+        align-items: center;
         text-align: center;
         color: white;
         font-weight: bold;
@@ -113,15 +116,33 @@
       .close {
         width: 100%;
         height: 50px;
-        background-color: #333;
-        color: white;
+        background-color: white;
+        color: #333;
         text-align: center;
         line-height: 50px;
         font-weight: bold;
         font-size: 20px;
       }
+
+      .select {
+        background-color: rgb(255, 255, 0) !important;
+      }
+
+      .menu {
+        display: none;
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #333;
+      }
+
+      .menu-container {
+        background-color: white;
+      }
     </style>
   </head>
+
   <body>
     <div class="canvas-container">
       <canvas id="canvas" width="1920" height="1080" style="border: 1px solid">
@@ -145,13 +166,13 @@
     <div class="searchBox">
       <input type="text" placeholder="검색하기" />
       <button>검색</button>
+      <div class="bookList"></div>
       <div class="building"></div>
     </div>
 
     <div class="menu">
-      <h1>도서관 정보 모달</h1>
-
       <div class="menu-container">
+        <h1>도서관 정보 모달</h1>
         <div class="about">
           <img src="../images/find/리온 도서관.jpg" />
           <div class="intro">

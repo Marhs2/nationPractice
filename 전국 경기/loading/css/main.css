@@ -41,22 +41,26 @@ svg path {
 
 svg path {
   fill: rgb(255, 255, 255);
-  animation: draw-line 4s forwards, fill-path 1s 3s forwards;
+  animation: loading 4s forwards, fill-path 1s 3s forwards;
   fill-opacity: 0;
 }
 
 .df {
   display: flex;
 }
+
 .jcSa {
   justify-content: space-around;
 }
+
 .alC {
   align-items: center;
 }
+
 .jcC {
   justify-content: center;
 }
+
 .fdC {
   flex-direction: column;
 }
@@ -72,11 +76,34 @@ svg path {
   from {
     fill-opacity: 0;
   }
+
   to {
     fill-opacity: 1;
     display: none;
   }
 }
+
+
+@keyframes loading {
+
+
+  0% {
+    stroke-dasharray: 0 50%;
+  }
+
+  50% {
+    stroke-dasharray: 50% 0;
+    fill: transparent;
+  }
+
+
+  100% {
+    stroke-dasharray: 50% 0;
+    fill: #333;
+  }
+
+}
+
 
 header {
   display: flex;
@@ -87,11 +114,12 @@ header {
   top: 0;
 }
 
-header > div[class*="nav"] {
+header>div[class*="nav"] {
   width: 500px;
   display: flex;
   justify-content: space-around;
   border: 1px solid black;
+
   & a {
     display: flex;
     height: 50px;
@@ -100,6 +128,7 @@ header > div[class*="nav"] {
     justify-content: center;
     align-items: center;
     font-weight: bold;
+
     &:hover {
       background-color: bisque;
     }
@@ -124,6 +153,7 @@ header img {
   border-radius: 10px;
   border: 1px solid black;
   overflow: hidden;
+
   & a {
     transition: 0.3s;
     display: flex;
@@ -131,6 +161,7 @@ header img {
     height: 100%;
     width: 100%;
     justify-content: center;
+
     &:hover {
       background-color: rgb(255, 108, 108);
     }
@@ -165,6 +196,7 @@ img {
   vertical-align: middle;
   object-fit: cover;
 }
+
 .slide-container {
   background-color: red;
 }
