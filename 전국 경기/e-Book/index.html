@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      .showText {
+        display: flex;
+        position: absolute;
+      }
+      .left {
+        transform-origin: right;
+      }
+
+      .showText > div {
+        background-color: white;
+        width: 700px;
+        height: 700px;
+        border: 1px solid black;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+      }
+
+      .left-slide {
+        position: absolute;
+        left: 0;
+        transform-origin: right;
+        visibility: hidden;
+      }
+
+      .right-slide {
+        position: absolute;
+        transform-origin: left;
+        right: 50px;
+        visibility: hidden;
+      }
+
+      .right {
+        transform-origin: left;
+      }
+
+      .showText div.anti {
+        animation: pageSlide 0.5s;
+        transform-style: preserve-3d;
+        perspective: 1000px;
+      }
+
+      @keyframes pageSlide {
+        to {
+          transform: rotateY(180deg);
+          visibility: visible;
+        }
+      }
+
+      .bookList {
+        width: fit-content;
+        height: fit-content;
+        border: 1px solid black;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+
+        & img {
+          width: 200px;
+          height: 300px;
+        }
+        & .showBook {
+          background-color: black;
+          margin-top: -5px;
+          color: white;
+          text-align: center;
+          font-weight: bold;
+          cursor: pointer;
+        }
+      }
+
+      .disable {
+        background-color: gray !important;
+        pointer-events: none;
+      }
+
+      .modal {
+        display: none;
+      }
+
+      .close {
+        width: 50px !important;
+        text-align: center;
+        background-color: #333 !important;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="modal">
+      <button class="beforePage">뒤로</button>
+      <button class="nextPage">다음</button>
+      <div class="showText">
+        <div class="left"></div>
+        <div class="left-slide"></div>
+        <div class="right-slide"></div>
+        <div class="right"></div>
+        <div class="close">닫기</div>
+      </div>
+    </div>
+
+    <select>
+      <option value="전체">전체</option>
+      <option value="사회과학">사회과학</option>
+      <option value="자연과학">자연과학</option>
+      <option value="예술">예술</option>
+      <option value="언어">언어</option>
+      <option value="문학">문학</option>
+      <option value="역사">역사</option>
+      <option value="기술과학">기술과학</option>
+      <option value="철학">철학</option>
+    </select>
+
+    <div class="bookList"></div>
+
+    <script src="./js/js.js"></script>
+  </body>
+</html>
