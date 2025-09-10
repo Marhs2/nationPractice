@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="search">
+      <div class="sort">
+        <select id="sort">
+          <option value="desc">내림차순</option>
+          <option value="asc">오름차순</option>
+        </select>
+      </div>
+      <div class="inputContainer">
+        <input type="text" placeholder="검색" />
+        <div class="history"></div>
+      </div>
+      <button>검색</button>
+      <div class="filter">
+        <a href="#/bookName" class="selected">제목</a>
+        <a href="#/bookAuthor">작가</a>
+        <a href="#/bookNameAndAuthor">제목 작가</a>
+      </div>
+    </div>
+
+    <div class="modal">
+      <h1>대출</h1>
+      <div class="rent-about">
+        <div class="about">
+          <img src="../images/books/1.jpg" alt="" />
+          <div class="text">
+            <div class="title">제목: asdsad</div>
+            <div class="sub">줄거리: asdsad</div>
+            <div class="date">출판일: asdsad</div>
+            <div class="rating">평점: asdsad</div>
+            <button>신청</button>
+          </div>
+        </div>
+
+        <h1>리뷰목록</h1>
+        <div class="review"></div>
+        <div class="close">닫기</div>
+      </div>
+    </div>
+    <div class="bookList"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>

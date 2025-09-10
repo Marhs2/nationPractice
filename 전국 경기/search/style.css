@@ -1,0 +1,96 @@
+a {
+  text-decoration: none;
+  color: #333;
+  margin: 10px;
+}
+.selected {
+  background-color: #333;
+  color: white;
+}
+.filter {
+  display: flex;
+}
+.filter > div {
+  width: 100px;
+  height: 50px;
+  border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bookList {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  & > div {
+    width: 300px;
+    height: 400px;
+    background-size: 300px 400px;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+  }
+}
+
+.inputContainer {
+  position: relative;
+}
+
+.history {
+  position: absolute;
+  background-color: white;
+  width: 175px;
+  border: 1px solid black;
+  text-align: center;
+  display: none;
+  & > div {
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid;
+  }
+}
+
+.book .about {
+  background-color: white;
+  width: fit-content;
+  height: 150px;
+  padding: 20px;
+}
+
+.modal {
+  background-color: white;
+  width: 1420px;
+  height: 700px;
+  border: 1px solid black;
+  display: none;
+  position: absolute;
+  top: 10%;
+  left: 10%;
+}
+
+.rent-about {
+  display: flex;
+  flex-direction: column;
+  & img {
+    width: 150px;
+    height: 200px;
+  }
+}
+
+.modal .about {
+  display: flex;
+  justify-content: space-around;
+}
+
+.review {
+  border: 1px solid black;
+  height: 305px;
+}
+
+.close {
+  background-color: #333;
+  color: white;
+  text-align: center;
+}
